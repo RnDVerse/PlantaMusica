@@ -1,4 +1,4 @@
-Day,Air_Temp_Low,Air_Temp_Mean,Air_Temp_High,Air_Humid_Low,Air_Humid_Mean,Air_Humid_High,Water_Temp_Low,Water_Temp_Mean,Water_Temp_High,Water_Humid_Low,Water_Humid_Mean,Water_Humid_High,green_area,Water_consumption,seed_count
+Day,Air Temp Low (°C),Air Temp Mean (°C),Air Temp High (°C),Air Humid Low (%),Air Humid Mean (%),Air Humid High (%),Water Temp Low (°C),Water Temp Mean (°C),Water Temp High (°C),Water Humid Low (°C),Water Humid Mean (°C),Water Humid High (%),Canopy Coverage (cm²),Water Consumption (mL),Seed Count
 0,19.632,22.5403,25.652,27.609,35.97,43.9139,19.314,23.004,28.917,93.791,93.77,93.748,35.213134765625,0.0,0.0
 2,20.4005,23.3079,25.298,25.66,28.595,36.6387,24.213,27.751,30.026,93.899,94.547,95.043,35.213134765625,30.3317,1.8
 4,21.9862,24.7408,26.117,27.406,30.231,35.342,25.018,28.658,31.235,94.504,94.978,95.345,35.213134765625,22.7488,3.138

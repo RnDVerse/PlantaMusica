@@ -2,16 +2,24 @@ import streamlit as st
 from rembg import remove
 from PIL import Image
 from io import BytesIO
-import base64
+
 
 st.set_page_config(layout="wide", page_title="Planta Musica [alpha-version]")
 
-st.write("## Analyze Plant & Music")
-st.write(""":tree: Try uploading an image to preprocess, and obtain your picked color (using HSV range for now) color-picker will be added later. 
-         Full quality processed images can be downloaded from the side bar. This code is open source and available [here](https://github.com/RnDVerse/PlantaMusica) on GitHub. Share with others if you find this useful :heart: learn more about the project [here](https://www.researchhub.com/hubs/lettuce-growth-and-music-data). 
-         This is a mere test deployment, several features are under development and will be updated soon (hopefully in a week or so). Have Fun!
+st.write("## Analyze Plant Canopy Coverage and Environment Conditions")
+st.write("""Try uploading an image to preprocess, and obtain your picked color (using ad-hoc HSV range for now) color-picker will be added later. 
+         Full quality processed images can be downloaded from the side bar. 
+         This code is open source and available [here](https://github.com/RnDVerse/PlantaMusica) on GitHub. 
+         Share with others if you find this useful :heart: learn more about the project [here](https://www.researchhub.com/hubs/lettuce-growth-and-music-data). 
+         This mini-app is in test deployment mode, several features are under development and will be updated soon (hopefully in a week or so). Have Fun!
         """
 )
+st.write("""Don't forget to check out the other sections :""")
+st.write("""1. Estimate Canopy Coverage""")
+st.write("""2. Extract Environment Condition""")
+st.write("""3. Correlation and Plotting""")
+st.write("""4. Music Analysis""")
+
 st.sidebar.write("## Upload and download :gear:")
 
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
