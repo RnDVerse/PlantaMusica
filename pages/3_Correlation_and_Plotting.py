@@ -22,13 +22,12 @@ if not os.path.exists(data_file_path):
 uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
-    # Optionally set the column names if required
+else:
+    df = pd.read_csv(data_file_path)
     df.columns = ['Day', 'Air Temp Low (°C)', 'Air Temp Mean (°C)', 'Air Temp High (°C)', 'Air Humid Low (%)',
                   'Air Humid Mean (%)', 'Air Humid High (%)', 'Water Temp Low (°C)', 'Water Temp Mean (°C)',
                   'Water Temp High (°C)', 'Water Humid Low (°C)', 'Water Humid Mean (°C)',
                   'Water Humid High (%)', 'Canopy Coverage (cm²)', 'Water Consumption (mL)', 'Seed Count']
-else:
-    df = pd.read_csv(data_file_path)
     # Convert columns to numeric and handle NaNs
     # df['Air Temp Mean (°C)'] = pd.to_numeric(df['Air Temp Mean (°C)'], errors='coerce')
     # df['Canopy Coverage (cm²)'] = pd.to_numeric(df['Canopy Coverage (cm²)'], errors='coerce')
@@ -66,6 +65,24 @@ y_column = st.sidebar.selectbox('Select Y axis column:', df.columns, index=defau
 
 # Sidebar configuration for polynomial degree
 degree = st.sidebar.slider('Select the polynomial degree:', 1, 10, 3)
+
+# Formatting the polynomial equation
+def format_polynomial(coeffs):
+    terms = []
+    degree = len(coeffs) - 1
+    for i, coeff in enumerate(coeffs):
+        if coeff == 0:
+            continue
+        exponent = degree - i
+        if exponent == 0:
+            terms.append(f"{coeff:.2f}")
+        elif exponent == 1:
+            terms.append(f"{coeff:.2f}x")
+        else:
+            terms.append(f"{coeff:.2f}x^{exponent}")
+    return " + ".join(terms).replace("+ -", "- ")
+
+
 
 # Perform polynomial fitting
 try:
@@ -112,9 +129,11 @@ st.altair_chart(chart, use_container_width=True)
 
 # Calculate the R-squared value
 r_squared = r2_score(df[y_column], polynomial(df[x_column]))
-st.write(f"Polynomial equation: {polynomial}")
-st.write(f"$R^2$: {r_squared:.3f}")
 
+# Formatting the polynomial equation
+polynomial_str = format_polynomial(polynomial.coefficients)
+st.write(f"Polynomial equation: {polynomial_str}")
+st.write(f"$R^2$: {r_squared:.3f}")
 # # For Debug
 # st.write(df[x_column][:3])
 # st.write(df[y_column][:3])
