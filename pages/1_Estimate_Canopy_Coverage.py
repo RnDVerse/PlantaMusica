@@ -6,30 +6,35 @@ from io import BytesIO
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Set page configuration
-st.set_page_config(layout="wide", page_title="Count Canopy Coverage", page_icon="📊")
+st.set_page_config(layout="wide", page_title="Planta Musica [alpha-version v0.2]")
 
-# Page title
-st.markdown("# Estimate Canopy Coverage of a Plant")
-st.sidebar.header("Estimate Canopy Coverage through pixels and then calibrate to cm^2")
+st.write("## Analyze Plant Canopy Coverage and Environment Conditions")
+st.write("""
+         Try uploading images to preprocess, and obtain your picked color (using ad-hoc HSV range for now) color-picker will be added later. 
+         Full quality processed images can be downloaded from the side bar. 
+         This code is open source and available [here](https://github.com/RnDVerse/PlantaMusica) on GitHub. 
+         Share with others if you find this useful :heart: learn more about the project [here](https://www.researchhub.com/hubs/lettuce-growth-and-music-data). 
+         This mini-app is in test deployment mode, several features are under development and will be updated soon (hopefully in a week or so). Have Fun!
+        """)
+st.write("1. Estimate Canopy Coverage")
+st.write("2. Data Analysis, Correlation, and Plotting")
+st.write("3. Music Analysis")
 
-st.write(
-    """Upload an image of a series of image of plants with green colored canopy. The canopy coverage will be calculated based on existing pixel scaling. 
-      Function for custom pixels adjustment is being worked on. You can improve the accuracy by first removing the background image through the plantamusica tab.  """
-)
+
+st.sidebar.write("## Upload and download :gear:")
+
 # Define maximum file size
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 # Helper function to convert and save image
 def convert_image(img):
     buf = BytesIO()
-    img.save(buf, format="PNG")
+    img.save(buf, format=img.format)
     byte_im = buf.getvalue()
     return byte_im
 
 # Image processing function
-def process_image(upload):
-    image = Image.open(upload)
+def process_image(image):
     col1, col2 = st.columns(2)
     col1.write("Original Image :camera:")
     col1.image(image)
@@ -57,13 +62,26 @@ def get_area_in_pixels(mask):
     green_area_pixels = np.sum(mask == 255)
     return green_area_pixels
 
+# Automatically analyze the default images at the beginning
+default_images_paths = ["images/Day20.jpg", "images/Day22.jpg", "images/Day24.jpg","images/Day26.jpg","images/Day28.jpg"]
+canopy_areas = []
+image_names = []
+
+for image_path in default_images_paths:
+    image = Image.open(image_path)
+    processed_image, original_image = process_image(image)
+    pixel_area = get_area_in_pixels(np.array(processed_image))
+    scaling_factor = 4096  # obtained from calibration
+    green_area_cm2 = pixel_area / scaling_factor
+    canopy_areas.append(green_area_cm2)
+    image_names.append(image_path.split('/')[-1])
+
+    # Display the green area for each default image
+    st.write(f"The Canopy Coverage for {image_path.split('/')[-1]} is {green_area_cm2} cm²")
+
 
 # Uploading and handling multiple images
 uploaded_files = st.sidebar.file_uploader("Upload images", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
-
-# Initialize lists to store results for plotting and displaying
-canopy_areas = []
-image_names = []
 
 if uploaded_files:
     for uploaded_file in uploaded_files:
@@ -71,7 +89,8 @@ if uploaded_files:
             st.error(f"The file {uploaded_file.name} is too large. Please upload an image smaller than 5MB.")
         else:
             # Process each image and display
-            processed_image, original_image = process_image(uploaded_file)
+            image = Image.open(uploaded_file)
+            processed_image, original_image = process_image(image)
             pixel_area = get_area_in_pixels(np.array(processed_image))
             scaling_factor = 4096  # obtained from calibration
             green_area_cm2 = pixel_area / scaling_factor
@@ -83,17 +102,8 @@ if uploaded_files:
 else:
     st.warning("Please upload an image or images to continue.")
 
-
-# Calculate and display Canopy Coverage if an image has been processed
-if 'original_image' in locals():
-    pixel_area = get_area_in_pixels(np.array(processed_image))
-    scaling_factor = 4096  # obtained from calibration
-    st.write(f"The Canopy Coverage is {pixel_area / scaling_factor} cm²")
-
 # If there are results, display them in a table and plot
 if canopy_areas:
-
-    
     # Create a DataFrame for displaying results in a table
     results_df = pd.DataFrame({
         "Image Name": image_names,
@@ -112,7 +122,6 @@ if canopy_areas:
     ax.set_xticklabels(image_names, rotation=45, ha='right')
     plt.tight_layout()
     st.pyplot(fig)
-
 
 # Button to rerun the app (triggers a rerun of the script)
 st.button("Re-run")
